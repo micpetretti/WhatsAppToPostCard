@@ -5,9 +5,9 @@ MESSAGE_REGEX = (r'(.*?)(?P<day>[0-9]{2}\/[0-9]{2}\/[0-9]{2})\s(?P<hour>[0-9]{2}
 
 
 def read_file(filename):
-    """
-    :param filename:
-    :return:
+    """ Read a messages file and returns a list of lines
+    :param filename: file to read
+    :return: list of lines with special chars filtered out
     """
     with open(filename, 'r') as f:
         lines = f.readlines()
@@ -21,9 +21,9 @@ def read_file(filename):
 
 
 def parse_message(lines):
-    """
-    :param lines:
-    :return:
+    """ Divide the message into its components using a regex
+    :param lines: list of lines to parse
+    :return: list of tuples containing the different parts of the message
     """
     struct = []
     for line in lines:
@@ -35,9 +35,9 @@ def parse_message(lines):
 
 
 def format_parsed(messages):
-    """
-    :param messages:
-    :return:
+    """ Group the messages by date
+    :param messages: list of tuples containing the parts of the messages
+    :return: dict with days as keys and list of tuples containing messages
     """
     struct = dict()
     for line in messages:
@@ -50,13 +50,10 @@ def format_parsed(messages):
 
 
 def parser(file='messages.txt'):
-    """
-    :param file:
-    :return:
+    """ Main function that parses a file
+    :param file: filename to parse
+    :return: final dict with the messages grouped by date
     """
     lines = read_file(file)
     messages = parse_message(lines)
     return format_parsed(messages)
-
-if __name__ == "__main__":
-    print(parser())
