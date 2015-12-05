@@ -1,8 +1,6 @@
 import re
-import json
-from collections import OrderedDict
 
-MESSAGE_REGEX = (r'(?P<day>[0-9]{2}\/[0-9]{2}\/[0-9]{2})\s(?P<hour>[0-9]{2}:[0-9]{2}:[0-9]{2}):\s'
+MESSAGE_REGEX = (r'(.*?)(?P<day>[0-9]{2}\/[0-9]{2}\/[0-9]{2})\s(?P<hour>[0-9]{2}:[0-9]{2}:[0-9]{2}):\s'
                  r'(?P<person>[^:]*):\s(?P<message>.*)')
 
 
@@ -31,7 +29,7 @@ def parse_message(lines):
     for line in lines:
         match = re.match(MESSAGE_REGEX, line)
         if not match:
-            break
+            continue
         struct.append((match.group('day'), match.group('person'), match.group('message'), ))
     return struct
 
@@ -61,4 +59,4 @@ def parser(file='messages.txt'):
     return format_parsed(messages)
 
 if __name__ == "__main__":
-    print(parser('messages_small.txt'))
+    print(parser())
