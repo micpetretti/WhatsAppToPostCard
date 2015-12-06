@@ -4,8 +4,6 @@
 # Authors:
 #   Jorge Dominguez <jorgedc93@gmail.com> - 2015
 import re
-from pprint import pprint
-
 import emoji
 
 MESSAGE_REGEX = (r'(?P<day>[0-9]{2}[\/.][0-9]{2}[\/.][0-9]{2,4})[\s,]*([0-9]{2}:[0-9]{2}(:[0-9]{2})*)[\s:-]*'
@@ -86,6 +84,3 @@ def parser(file='messages.txt'):
     lines = read_file(file)
     messages = parse_message(lines)
     return format_parsed(messages)
-
-if __name__ == "__main__":
-    parser('messages_skintone_snippet.txt')
