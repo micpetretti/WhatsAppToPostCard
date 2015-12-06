@@ -41,7 +41,7 @@ def parse_message(lines):
     struct = []
     for line in lines:
         # We convert the emojis to text representation for easier handling
-        line = emoji.demojize(line.decode('utf-8'))
+        line = emoji.demojize(line)
         match = re.match(MESSAGE_REGEX, line)
         if not match:
             continue
