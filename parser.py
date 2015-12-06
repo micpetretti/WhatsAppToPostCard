@@ -1,7 +1,14 @@
+#!/usr/bin/env python3.5
+# coding=utf-8
+#
+# Authors:
+#   Jorge Dominguez <jorgedc93@gmail.com> - 2015
 import re
+import emoji
 
 MESSAGE_REGEX = (r'(?P<day>[0-9]{2}[\/.][0-9]{2}[\/.][0-9]{2,4})[\s,]*([0-9]{2}:[0-9]{2}(:[0-9]{2})*)[\s:-]*'
                  r'(?P<person>[^:]*):\s(?P<message>.*)')
+DATE_REGEX = r'(?P<day>[0-9]{2}[\/.][0-9]{2}[\/.][0-9]{2,4})[\s,]*([0-9]{2}:[0-9]{2}(:[0-9]{2})*)'
 
 
 def read_file(filename):
@@ -13,10 +20,16 @@ def read_file(filename):
         lines = f.readlines()
 
     result = []
+    i = 0
     for line in lines:
         if line != '\n':
-            line = line.rstrip('\n')
-            result.append(line)
+            line = line.rstrip('\n').rstrip('\r\r')
+            # If the new line is not a new message we append this line to the previous one
+            if re.search(DATE_REGEX, line) is not None:
+                i += 1
+                result.append(line)
+            else:
+                result[i-1] = result[i-1] + ' ' + line
     return result
 
 
@@ -27,10 +40,18 @@ def parse_message(lines):
     """
     struct = []
     for line in lines:
+        # We convert the emojis to text representation for easier handling
+        line = emoji.demojize(line.decode('utf-8'))
         match = re.match(MESSAGE_REGEX, line)
         if not match:
             continue
-        struct.append((match.group('day'), match.group('person'), match.group('message'), ))
+        date = match.group('day')
+        # We need to change the date from DD/MM/YY to YY/MM/DD for easier sorting
+        day = date[0:2]
+        month = date[3:5]
+        year = date[6:]
+        new_date = '{}/{}/{}'.format(year, month, day)
+        struct.append((new_date, match.group('person'), match.group('message'), ))
     return struct
 
 
