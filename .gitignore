@@ -6,6 +6,8 @@
 .idea
 *.iml
 messages.txt
+messages_snippet.txt
 out
 gen
 test.py
+*.pyc
