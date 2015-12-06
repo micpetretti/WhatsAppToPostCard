@@ -71,6 +71,3 @@ def parser(file='messages.txt'):
     lines = read_file(file)
     messages = parse_message(lines)
     return format_parsed(messages)
-
-if __name__ == '__main__':
-    pprint(parser('small.txt'))
