@@ -4,11 +4,15 @@
 # Authors:
 #   Jorge Dominguez <jorgedc93@gmail.com> - 2015
 import re
+from pprint import pprint
+
 import emoji
 
 MESSAGE_REGEX = (r'(?P<day>[0-9]{2}[\/.][0-9]{2}[\/.][0-9]{2,4})[\s,]*([0-9]{2}:[0-9]{2}(:[0-9]{2})*)[\s:-]*'
                  r'(?P<person>[^:]*):\s(?P<message>.*)')
 DATE_REGEX = r'(?P<day>[0-9]{2}[\/.][0-9]{2}[\/.][0-9]{2,4})[\s,]*([0-9]{2}:[0-9]{2}(:[0-9]{2})*)'
+
+REMOVE_MODIFIERS = r'(.*?)(:emoji_modifier_fitzpatrick_type-[0-9]:)(.*)'
 
 
 def read_file(filename):
@@ -42,16 +46,20 @@ def parse_message(lines):
     for line in lines:
         # We convert the emojis to text representation for easier handling
         line = emoji.demojize(line)
-        match = re.match(MESSAGE_REGEX, line)
-        if not match:
+        match_message = re.match(MESSAGE_REGEX, line)
+        if not match_message:
             continue
-        date = match.group('day')
+        message = match_message.group('message')
+        match = re.match(REMOVE_MODIFIERS, message)
+        if match:
+            message = match.group(1) + '' + match.group(3)
+        date = match_message.group('day')
         # We need to change the date from DD/MM/YY to YY/MM/DD for easier sorting
         day = date[0:2]
         month = date[3:5]
         year = date[6:]
         new_date = '{}/{}/{}'.format(year, month, day)
-        struct.append((new_date, match.group('person'), match.group('message'), ))
+        struct.append((new_date, match_message.group('person'), message))
     return struct
 
 
@@ -78,3 +86,6 @@ def parser(file='messages.txt'):
     lines = read_file(file)
     messages = parse_message(lines)
     return format_parsed(messages)
+
+if __name__ == "__main__":
+    parser('messages_skintone_snippet.txt')
