@@ -1,3 +1,8 @@
+#!/usr/bin/env python3.5
+# coding=utf-8
+#
+# Authors:
+#   Jorge Dominguez <jorgedc93@gmail.com> - 2015
 import re
 import emoji
 
