@@ -4,6 +4,7 @@ import emoji
 
 MESSAGE_REGEX = (r'(?P<day>[0-9]{2}[\/.][0-9]{2}[\/.][0-9]{2,4})[\s,]*([0-9]{2}:[0-9]{2}(:[0-9]{2})*)[\s:-]*'
                  r'(?P<person>[^:]*):\s(?P<message>.*)')
+DATE_REGEX = r'(?P<day>[0-9]{2}[\/.][0-9]{2}[\/.][0-9]{2,4})[\s,]*([0-9]{2}:[0-9]{2}(:[0-9]{2})*)'
 
 
 def read_file(filename):
@@ -15,10 +16,15 @@ def read_file(filename):
         lines = f.readlines()
 
     result = []
+    i = 0
     for line in lines:
         if line != '\n':
             line = line.rstrip('\n').rstrip('\r\r')
-            result.append(line)
+            if re.search(DATE_REGEX, line) is not None:
+                i += 1
+                result.append(line)
+            else:
+                result[i-1] = result[i-1] + ' ' + line
     return result
 
 
@@ -67,4 +73,4 @@ def parser(file='messages.txt'):
     return format_parsed(messages)
 
 if __name__ == '__main__':
-    pprint(parser())
+    pprint(parser('small.txt'))
