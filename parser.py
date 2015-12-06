@@ -1,5 +1,4 @@
 import re
-from pprint import pprint
 import emoji
 
 MESSAGE_REGEX = (r'(?P<day>[0-9]{2}[\/.][0-9]{2}[\/.][0-9]{2,4})[\s,]*([0-9]{2}:[0-9]{2}(:[0-9]{2})*)[\s:-]*'
