@@ -1,4 +1,6 @@
 import re
+from pprint import pprint
+import emoji
 
 MESSAGE_REGEX = (r'(?P<day>[0-9]{2}[\/.][0-9]{2}[\/.][0-9]{2,4})[\s,]*([0-9]{2}:[0-9]{2}(:[0-9]{2})*)[\s:-]*'
                  r'(?P<person>[^:]*):\s(?P<message>.*)')
@@ -15,7 +17,7 @@ def read_file(filename):
     result = []
     for line in lines:
         if line != '\n':
-            line = line.rstrip('\n')
+            line = line.rstrip('\n').rstrip('\r\r')
             result.append(line)
     return result
 
@@ -27,10 +29,16 @@ def parse_message(lines):
     """
     struct = []
     for line in lines:
+        line = emoji.demojize(line.decode('utf-8'))
         match = re.match(MESSAGE_REGEX, line)
         if not match:
             continue
-        struct.append((match.group('day'), match.group('person'), match.group('message'), ))
+        date = match.group('day')
+        day = date[0:2]
+        month = date[3:5]
+        year = date[6:]
+        new_date = '{}/{}/{}'.format(year, month, day)
+        struct.append((new_date, match.group('person'), match.group('message'), ))
     return struct
 
 
@@ -57,3 +65,6 @@ def parser(file='messages.txt'):
     lines = read_file(file)
     messages = parse_message(lines)
     return format_parsed(messages)
+
+if __name__ == '__main__':
+    pprint(parser())
