@@ -10,6 +10,8 @@ MESSAGE_REGEX = (r'(?P<day>[0-9]{2}[\/.][0-9]{2}[\/.][0-9]{2,4})[\s,]*([0-9]{2}:
                  r'(?P<person>[^:]*):\s(?P<message>.*)')
 DATE_REGEX = r'(?P<day>[0-9]{2}[\/.][0-9]{2}[\/.][0-9]{2,4})[\s,]*([0-9]{2}:[0-9]{2}(:[0-9]{2})*)'
 
+REMOVE_MODIFIERS = r'(.*?)(:emoji_modifier_fitzpatrick_type-[0-9]:)(.*)'
+
 
 def read_file(filename):
     """ Read a messages file and returns a list of lines
@@ -42,17 +44,20 @@ def parse_message(lines):
     for line in lines:
         # We convert the emojis to text representation for easier handling
         line = emoji.demojize(line)
-        match = re.match(MESSAGE_REGEX, line)
-        if not match:
-
+        match_message = re.match(MESSAGE_REGEX, line)
+        if not match_message:
             continue
-        date = match.group('day')
+        message = match_message.group('message')
+        match = re.match(REMOVE_MODIFIERS, message)
+        if match:
+            message = match.group(1) + '' + match.group(3)
+        date = match_message.group('day')
         # We need to change the date from DD/MM/YY to YY/MM/DD for easier sorting
         day = date[0:2]
         month = date[3:5]
         year = date[6:]
         new_date = '{}/{}/{}'.format(year, month, day)
-        struct.append((new_date, match.group('person'), match.group('message'), ))
+        struct.append((new_date, match_message.group('person'), message))
     return struct
 
 
