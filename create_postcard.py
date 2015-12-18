@@ -20,7 +20,7 @@ def ascii(file_path, address_name, street_and_number, postcode_and_city, country
 
     message_list = message_listing.build(file_path)
 
-    postcard_layout = postcard.empty(address_name, street_and_number, postcode_and_city, country)
+    # postcard_layout = postcard.empty(address_name, street_and_number, postcode_and_city, country)
 
     formatted_message_list = message_listing.format_monospace_font(message_list)
 
@@ -32,9 +32,9 @@ def ascii(file_path, address_name, street_and_number, postcode_and_city, country
             twelve_lines.append(formatted_message_list[number])
             count += 1
         if count == 12:
-            postcard_stack.append(postcard.fill(twelve_lines, postcard_layout))
+            postcard_stack.append(postcard.fill(twelve_lines, postcard.empty(address_name, street_and_number, postcode_and_city, country)))
             count = 0
             twelve_lines = list()
-    postcard_stack.append(postcard.fill(twelve_lines, postcard_layout))
+    postcard_stack.append(postcard.fill(twelve_lines, postcard.empty(address_name, street_and_number, postcode_and_city, country)))
     return postcard_stack
 
