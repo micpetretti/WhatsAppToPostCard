@@ -3,6 +3,7 @@
 #
 # Authors:
 #   Michael Petretti <mic.petretti@gmail.com> - 2015
+import re
 
 import parser
 
@@ -34,10 +35,10 @@ def build(path_to_file):
     return message_list
 
 
-def format_monospace_font(message_list):
+def format_monospace_font(message_list, text_width=41):
     """ In order to enter it to the empty postcard layout every line must be 40 chars and padded for readability.
     :param message_list:
-    :return: list of 40 char strings
+    :return: list of 41 char strings
     """
     formatted_list = list()
     for tupel in message_list:
@@ -45,18 +46,24 @@ def format_monospace_font(message_list):
         # check that it fitts in line
         # check person and add padding
         if isinstance(tupel[0], str):
-            line = '                                         '
+            line = ''
+            for _ in range(text_width):
+                line = line + ' '
             formatted_list.append(line)
             line = '     ' + tupel[1] + '                                   '
-            line = line[0:41]
+            line = line[0:text_width]
             formatted_list.append(line)
         else:
-            words = tupel[1].split(' ')
+            words = tupel[1]
+            words = words.replace('_', ' ')
+            words = words.split(' ')
             num_letters = 0
             line = ''
             message_line_split = list()
             for word in words:
-                if num_letters + len(word) <= 36:
+                if len(word) >= (text_width - 4):
+                    word = word[:(text_width - 4)]
+                if num_letters + len(word) <= (text_width - 4):
                     line = line + word + ' '
                     num_letters = num_letters + len(word) + 1
                 else :
@@ -65,12 +72,16 @@ def format_monospace_font(message_list):
                     line = word + ' '
             message_line_split.append(line)
             for message in message_line_split:
+                # for person one append a '->' and padd with whitespaces
                 if tupel[0] is True:
-                    message = '->' + message + '                                        '
-                    formatted_list.append(message[:41])
+                    message = '->' + message
+                    for _ in range(text_width):
+                        message = message + ' '
+                    formatted_list.append(message[:text_width])
+                # for person 2 put white space padding at the front and append '<-'
                 if tupel[0] is False:
                     message = message.rstrip(' ')
-                    for _ in range(39 - len(message)):
+                    for _ in range((text_width - 2) - len(message)):
                         message = ' ' + message
                     message = message + '<-'
                     formatted_list.append(message)
@@ -78,6 +89,7 @@ def format_monospace_font(message_list):
 
 
 def readable_date(date):
+    """  """
     y, m, d = date.split('/')
     return y, m, d
 
